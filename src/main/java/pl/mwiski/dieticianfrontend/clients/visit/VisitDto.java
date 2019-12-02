@@ -20,5 +20,10 @@ public class VisitDto {
     private SimpleUserDto user;
     private SimpleDieticianDto dietician;
     private boolean available;
-    private boolean completed;
+
+    public VisitDto(String dateTime, SimpleDieticianDto dietician, boolean available) {
+        this.dateTime = dateTime;
+        this.dietician = dietician;
+        this.available = available;
+    }
 }

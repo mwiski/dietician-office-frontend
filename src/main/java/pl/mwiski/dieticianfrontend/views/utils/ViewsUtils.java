@@ -1,4 +1,4 @@
-package pl.mwiski.dieticianfrontend.views;
+package pl.mwiski.dieticianfrontend.views.utils;
 
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.notification.Notification;
@@ -6,9 +6,15 @@ import com.vaadin.flow.component.textfield.TextField;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+import pl.mwiski.dieticianfrontend.clients.dietician.DieticianDto;
+import pl.mwiski.dieticianfrontend.clients.dietician.DieticianService;
 import pl.mwiski.dieticianfrontend.clients.user.UserDto;
 import pl.mwiski.dieticianfrontend.clients.user.UserService;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -19,16 +25,27 @@ public class ViewsUtils {
         return auth.getName();
     }
 
-    public static UserDto getLoggedUser(UserService userService) {
-        UserDto userDto = new UserDto();
+    public static UserDto getLoggedUser(final UserService userService) {
+        Optional<UserDto> userDto;
         String username = getAuthUser();
         if (username != null && !username.equals("anonymousUser")) {
-            userDto = userService.getUserByName(username);
+            userDto = userService.getUserByLogin(username);
+            return userDto.orElseGet(UserDto::new);
         }
-        return userDto;
+        return new UserDto();
     }
 
-    public static Button getRoute(String name, String location) {
+    public static DieticianDto getLoggedDietician(final DieticianService dieticianService) {
+        Optional<DieticianDto> dieticianDto;
+        String username = getAuthUser();
+        if (username != null && !username.equals("anonymousUser")) {
+            dieticianDto = dieticianService.getDieticianByLogin(username);
+            return dieticianDto.orElseGet(DieticianDto::new);
+        }
+        return new DieticianDto();
+    }
+
+    public static Button getRoute(final String name, final String location) {
         Button button = new Button(name);
         button.addClickListener(e ->
                 button.getUI().ifPresent(ui ->
@@ -37,7 +54,7 @@ public class ViewsUtils {
         return button;
     }
 
-    public static int convertStringToInt(String input) {
+    public static int convertStringToInt(final String input) {
 
         int i = 0;
         try {
@@ -60,12 +77,19 @@ public class ViewsUtils {
         return i;
     }
 
-    public static void validateFields(List<TextField> inputs) {
+    public static void validateFields(final List<TextField> inputs) {
         List<TextField> emptyFields = inputs.stream()
                 .filter(i -> i.getValue().equals(""))
                 .collect(Collectors.toList());
         emptyFields.forEach(f -> {
             Notification.show(f.getLabel() + " field is empty!");
         });
+    }
+
+    public static String dateToString(LocalDateTime dateTime) {
+        if (dateTime == null) {
+            throw new IllegalArgumentException("Date of visit cannot be empty!");
+        }
+        return dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
 }

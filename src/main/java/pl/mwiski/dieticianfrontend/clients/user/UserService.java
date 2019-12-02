@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +20,10 @@ public class UserService {
         return userClient.get(userId);
     }
 
-    public UserDto getUserByName(final String username) {
+    public Optional<UserDto> getUserByLogin(final String username) {
+        if (username.equals("")) {
+            return Optional.empty();
+        }
         return userClient.getUserByLogin(username);
     }
 

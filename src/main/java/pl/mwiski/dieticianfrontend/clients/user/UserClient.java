@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -18,12 +19,12 @@ public interface UserClient {
     UserDto get(@PathVariable(value = "userId") final long userId);
 
     @GetMapping("name/{username}/${api.key}")
-    UserDto getUserByLogin(@PathVariable(value = "username") final String username);
+    Optional<UserDto> getUserByLogin(@PathVariable final String username);
 
     @PostMapping(value = "${api.key}", consumes = APPLICATION_JSON_VALUE)
     UserDto add(@RequestBody @Valid final UserDto userDto);
 
-    @PostMapping(value = "${api.key}", consumes = APPLICATION_JSON_VALUE)
+    @PostMapping(value = "admin/${api.key}", consumes = APPLICATION_JSON_VALUE)
     void addAdmin(@RequestBody @Valid final UserDto userDto);
 
     @PutMapping("${api.key}")

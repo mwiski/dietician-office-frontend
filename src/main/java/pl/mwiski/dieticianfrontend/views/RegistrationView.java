@@ -9,11 +9,13 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
 import pl.mwiski.dieticianfrontend.clients.user.*;
+import pl.mwiski.dieticianfrontend.views.utils.ViewsUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 
-import static pl.mwiski.dieticianfrontend.views.ViewsUtils.*;
+import static pl.mwiski.dieticianfrontend.views.utils.ViewsUtils.*;
 
 @Route("registration")
 public class RegistrationView extends VerticalLayout {
@@ -80,8 +82,8 @@ public class RegistrationView extends VerticalLayout {
         );
         validateFields(new ArrayList<>(Arrays.asList(login, password, name, lastName, city, postalCode, street, buildingNumber, phoneNumber, mail)));
         userService.add(userDto);
-        UserDto newUser = userService.getUserByName(userDto.getLogin());
-        if (newUser == null) {
+        Optional<UserDto> newUser = userService.getUserByLogin(userDto.getLogin());
+        if (!newUser.isPresent()) {
             Notification.show("Failed to register new user!");
         } else {
             Notification.show("User " + userDto.getLogin() + " has been registered!");

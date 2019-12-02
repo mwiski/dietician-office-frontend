@@ -2,6 +2,7 @@ package pl.mwiski.dieticianfrontend.views;
 
 import com.vaadin.flow.component.Key;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.H1;
 import com.vaadin.flow.component.html.H3;
@@ -11,14 +12,16 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.Route;
+import pl.mwiski.dieticianfrontend.clients.dietician.DieticianDto;
+import pl.mwiski.dieticianfrontend.clients.dietician.DieticianService;
 import pl.mwiski.dieticianfrontend.clients.opinion.OpinionDto;
 import pl.mwiski.dieticianfrontend.clients.opinion.OpinionService;
 import pl.mwiski.dieticianfrontend.clients.user.RoleType;
 import pl.mwiski.dieticianfrontend.clients.user.SimpleUserDto;
 import pl.mwiski.dieticianfrontend.clients.user.UserDto;
 import pl.mwiski.dieticianfrontend.clients.user.UserService;
-import static pl.mwiski.dieticianfrontend.views.ViewsUtils.getLoggedUser;
-import static pl.mwiski.dieticianfrontend.views.ViewsUtils.getRoute;
+import pl.mwiski.dieticianfrontend.views.utils.ViewsUtils;
+import static pl.mwiski.dieticianfrontend.views.utils.ViewsUtils.*;
 
 @Route
 public class MainView extends VerticalLayout {
@@ -29,13 +32,14 @@ public class MainView extends VerticalLayout {
 
     protected MainView(OpinionService opinionService,
                        UserService userService,
+                       DieticianService dieticianService,
                        ViewsUtils viewsUtils) {
         this.opinionService = opinionService;
         setDefaultHorizontalComponentAlignment(Alignment.CENTER);
-        setSizeFull();
         addClassName("main-view");
 
         final UserDto userDto = getLoggedUser(userService);
+        final DieticianDto dieticianDto = getLoggedDietician(dieticianService);
 
         TextField opinion = new TextField();
 
@@ -44,11 +48,8 @@ public class MainView extends VerticalLayout {
         addOpinion(opinionService, userDto, opinion, addOpinionButton, opinionGrid);
 
         Button editButton = new Button("Edit");
-        editButton.setVisible(false);
         TextField edit = new TextField("Edit opinion");
-        edit.setVisible(false);
         Button deleteButton = new Button("Delete");
-        deleteButton.setVisible(false);
 
         H1 header = new H1("Dietician Office App");
         header.getElement().getThemeList().add("dark");
@@ -56,17 +57,29 @@ public class MainView extends VerticalLayout {
 
         Button recipesButton = getRoute("Recipes", "recipes");
         HorizontalLayout layout = new HorizontalLayout(recipesButton);
-        addLogButtons(userDto, layout);
+        addLogButtons(userDto, dieticianDto, layout);
+        FormLayout formLayout = new FormLayout();
+        formLayout.add(edit, editButton, deleteButton);
+        formLayout.setVisible(false);
+        opinionGrid.setSizeFull();
+        HorizontalLayout horizontalLayout = new HorizontalLayout(opinionGrid, formLayout);
+        horizontalLayout.setSizeFull();
 
         add(
                 layout,
                 header,
                 new H3("With this app you can look for visits to dieticians and schedule them!"),
                 new H4("Opinions about our dieticians:"),
-                opinionGrid,
+                horizontalLayout,
                 new H4("Add your opinion:"),
-                new HorizontalLayout(opinion, addOpinionButton, edit, editButton, deleteButton)
+                new HorizontalLayout(opinion, addOpinionButton)
         );
+        setEditAndDeleteOpinion(userDto, editButton, edit, deleteButton, formLayout);
+        setSizeFull();
+        refresh();
+    }
+
+    private void setEditAndDeleteOpinion(UserDto userDto, Button editButton, TextField edit, Button deleteButton, FormLayout formLayout) {
         opinionGrid.asSingleSelect().addValueChangeListener(event -> {
             if (userDto.getName() != null) {
                 OpinionDto selectedOpinion = opinionGrid.asSingleSelect().getValue();
@@ -74,9 +87,7 @@ public class MainView extends VerticalLayout {
                     return;
                 } else if (selectedOpinion.getUser().getUser().equals(userDto.getLogin()) ||
                         userDto.getRoleType() == RoleType.ADMIN) {
-                    edit.setVisible(true);
-                    editButton.setVisible(true);
-                    deleteButton.setVisible(true);
+                    formLayout.setVisible(true);
                     opinionId = selectedOpinion.getId();
                     editButton.addClickListener(e -> {
                         editOpinion(edit);
@@ -87,13 +98,10 @@ public class MainView extends VerticalLayout {
                         refresh();
                     });
                 } else {
-                    edit.setVisible(false);
-                    editButton.setVisible(false);
-                    deleteButton.setVisible(false);
+                    formLayout.setVisible(false);
                     refresh();
                 }
         }});
-        refresh();
     }
 
     private void addOpinion(OpinionService opinionService, UserDto userDto, TextField textField, Button button, Grid grid) {
@@ -134,15 +142,18 @@ public class MainView extends VerticalLayout {
         opinionGrid.setItems(opinionService.getAll());
     }
 
-    public void addLogButtons(UserDto userDto, HorizontalLayout layout) {
+    public void addLogButtons(UserDto userDto, DieticianDto dieticianDto, HorizontalLayout layout) {
         Button loginButton = getRoute("Login", "login");
         Button logoutButton = new Button("Logout");
         Button registration = getRoute("Registration", "registration");
-        logoutButton.addClickListener(e -> getUI().ifPresent(ui -> {
-            ui.getPage().setLocation("logout");
-        }));
-
-        if (userDto.getName() != null) {
+        Button adminButton = getRoute("Admin", "admin");
+        Button visitsButton = getRoute("Visits", "visits");
+        logoutButton.addClickListener(e -> getUI().ifPresent(ui -> ui.getPage().setLocation("logout")));
+        if (userDto.getName() != null && userDto.getRoleType() == RoleType.ADMIN) {
+            layout.add(adminButton);
+        }
+        if (userDto.getName() != null || dieticianDto.getName() != null) {
+            layout.add(visitsButton);
             layout.add(logoutButton);
         } else {
             layout.add(loginButton);
