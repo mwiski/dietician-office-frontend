@@ -15,7 +15,7 @@ public interface VisitClient {
     List<VisitDto> getAvailableVisits(@RequestParam(value = "date") final String date);
 
     @GetMapping("users/{userId}/${api.key}")
-    List<VisitDto> getUserVisits(@PathVariable(value = "date") final long userId);
+    List<VisitDto> getUserVisits(@PathVariable(value = "userId") final long userId);
 
     @GetMapping("dieticians/{dieticianId}/${api.key}")
     List<VisitDto> getDieticianVisits(@PathVariable(value = "dieticianId") final long dieticianId);

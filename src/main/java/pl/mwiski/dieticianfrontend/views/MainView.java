@@ -147,13 +147,19 @@ public class MainView extends VerticalLayout {
         Button logoutButton = new Button("Logout");
         Button registration = getRoute("Registration", "registration");
         Button adminButton = getRoute("Admin", "admin");
-        Button visitsButton = getRoute("Visits", "visits");
+        Button adminVisitsButton = getRoute("Visits", "admin/visits");
+        Button userVisitsButton = getRoute("Visits", "user/visits");
+        Button dieticianVisitsButton = getRoute("Visits", "dietician/visits");
         logoutButton.addClickListener(e -> getUI().ifPresent(ui -> ui.getPage().setLocation("logout")));
         if (userDto.getName() != null && userDto.getRoleType() == RoleType.ADMIN) {
             layout.add(adminButton);
+            layout.add(adminVisitsButton);
         }
-        if (userDto.getName() != null || dieticianDto.getName() != null) {
-            layout.add(visitsButton);
+        if (userDto.getName() != null && userDto.getRoleType() == RoleType.USER) {
+            layout.add(userVisitsButton);
+            layout.add(logoutButton);
+        } else if (dieticianDto.getName() != null) {
+            layout.add(dieticianVisitsButton);
             layout.add(logoutButton);
         } else {
             layout.add(loginButton);

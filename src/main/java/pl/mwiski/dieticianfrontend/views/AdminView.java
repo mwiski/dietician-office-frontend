@@ -152,7 +152,7 @@ public class AdminView extends VerticalLayout {
         Button loginButton = getRoute("Login", "login");
         Button logoutButton = new Button("Logout");
         Button registration = getRoute("Registration", "registration");
-        Button visitsButton = getRoute("Visits", "visits");
+        Button visitsButton = getRoute("Visits", "admin/visits");
         logoutButton.addClickListener(e -> getUI().ifPresent(ui -> ui.getPage().setLocation("logout")));
 
         if (userDto.getName() != null || dieticianDto.getName() != null) {
