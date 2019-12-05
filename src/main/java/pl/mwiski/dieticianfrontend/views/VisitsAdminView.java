@@ -58,6 +58,7 @@ public class VisitsAdminView extends VerticalLayout {
 
         searchAdminButton = new Button("Search");
         Button cancelVisitButton = new Button("Cancel");
+        cancelVisitButton.setVisible(false);
         addVisitByAdminButton = new Button("Add visit");
 
         H1 header = new H1("Dietician Office App");
@@ -89,6 +90,7 @@ public class VisitsAdminView extends VerticalLayout {
                 lookForVisitsAdminHeader,
                 searchAdminButton,
                 adminVisitsLayout,
+                cancelVisitButton,
                 addVisitHeader,
                 newVisitDate,
                 newVisitTime,
@@ -112,13 +114,14 @@ public class VisitsAdminView extends VerticalLayout {
             if (selectedVisit == null) {
                 return;
             }
+            visitLayout.removeAll();
             visitLayout.setVisible(true);
+            cancelVisitButton.setVisible(true);
             adminVisitId = selectedVisit.getId();
             visitLayout.add("Visit ID: " + selectedVisit.getId());
             visitLayout.add("Date and time: " + selectedVisit.getDateTime());
             visitLayout.add("User: " + selectedVisit.getUser().getName() + " " + selectedVisit.getUser().getLastName());
             visitLayout.add("Dietician: " + selectedVisit.getDietician().getName() + " " + selectedVisit.getDietician().getLastName());
-            visitLayout.add(cancelVisitButton);
             cancelVisitButton.addClickListener(e -> {
                 visitsService.cancel(adminVisitId);
                 adminGrid.setItems(visitsService.getAll());

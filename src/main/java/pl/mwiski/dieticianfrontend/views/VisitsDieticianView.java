@@ -62,6 +62,7 @@ public class VisitsDieticianView extends VerticalLayout {
         searchButton = new Button("Search");
         showMyVisitsButton = new Button("Show my Visits");
         Button cancelDieticianVisitButton = new Button("Cancel");
+        cancelDieticianVisitButton.setVisible(false);
         addVisitByDieticianButton = new Button("Add visit");
 
         H1 header = new H1("Dietician Office App");
@@ -86,10 +87,11 @@ public class VisitsDieticianView extends VerticalLayout {
         availableGrid.setMinHeight("400px");
         availableVisitsLayout = new HorizontalLayout(availableGrid, availableVisitLayout);
         availableVisitsLayout.setSizeFull();
+        availableVisitsLayout.setMinHeight("400px");
 
         dieticianVisitsLayout = new HorizontalLayout(dieticianVisitsGrid, dieticianVisitLayout);
         dieticianVisitsLayout.setSizeFull();
-        dieticianVisitLayout.setMinHeight("500px");
+        dieticianVisitsLayout.setMinHeight("500px");
 
         lookForVisitsHeader = new H3("Look for visits and add them");
         yourVisitsHeader = new H4("Look for your visits:");
@@ -105,6 +107,7 @@ public class VisitsDieticianView extends VerticalLayout {
                 yourVisitsHeader,
                 showMyVisitsButton,
                 dieticianVisitsLayout,
+                cancelDieticianVisitButton,
                 addVisitHeader,
                 newVisitDate,
                 newVisitTime,
@@ -136,13 +139,14 @@ public class VisitsDieticianView extends VerticalLayout {
             if (selectedVisit == null) {
                 return;
             }
+            dieticianVisitLayout.removeAll();
             dieticianVisitLayout.setVisible(true);
+            cancelDieticianVisitButton.setVisible(true);
             dieticianVisitId = selectedVisit.getId();
             dieticianVisitLayout.add("Date and time: " + selectedVisit.getDateTime());
-            dieticianVisitLayout.add("Dietician: " + selectedVisit.getDietician().getName() + " " + selectedVisit.getDietician().getLastName() +
-                    ",\nphone number " + selectedVisit.getDietician().getPhoneNumber() + ",\n mail: " + selectedVisit.getDietician().getMail() +
+            dieticianVisitLayout.add("User: " + selectedVisit.getUser().getName() + " " + selectedVisit.getUser().getLastName() +
+                    ",\nphone number " + selectedVisit.getUser().getPhoneNumber() + ",\n mail: " + selectedVisit.getUser().getMail() +
                     ", available: " + selectedVisit.isAvailable());
-            dieticianVisitLayout.add(cancelDieticianVisitButton);
             cancelDieticianVisitButton.addClickListener(e -> {
                 visitsService.cancel(dieticianVisitId);
                 LocalDate localDate = searchedDate.getValue();

@@ -57,6 +57,7 @@ public class VisitsUserView extends VerticalLayout{
         searchButton = new Button("Search");
         showMyVisitsButton = new Button("Show my Visits");
         Button scheduleButton = new Button("Schedule");
+        scheduleButton.setVisible(false);
         Button cancelUserVisitButton = new Button("Cancel");
 
         H1 header = new H1("Dietician Office App");
@@ -97,6 +98,7 @@ public class VisitsUserView extends VerticalLayout{
                 searchedDate,
                 searchButton,
                 availableVisitsLayout,
+                scheduleButton,
                 yourVisitsHeader,
                 showMyVisitsButton,
                 userVisitsLayout
@@ -119,11 +121,12 @@ public class VisitsUserView extends VerticalLayout{
                 if (selectedVisit == null) {
                     return;
                 }
+                availableVisitLayout.removeAll();
                 availableVisitLayout.setVisible(true);
+                scheduleButton.setVisible(true);
                 visitId = selectedVisit.getId();
                 availableVisitLayout.add("Date and time: " + selectedVisit.getDateTime());
                 availableVisitLayout.add("Dietician: " + selectedVisit.getDietician().getName() + " " + selectedVisit.getDietician().getLastName());
-                availableVisitLayout.add(scheduleButton);
                 scheduleButton.addClickListener(e -> {
                     visitsService.schedule(visitId, userDto.getId());
                     LocalDate localDate = searchedDate.getValue();
@@ -154,6 +157,7 @@ public class VisitsUserView extends VerticalLayout{
             if (selectedVisit == null) {
                 return;
             }
+            userVisitLayout.removeAll();
             userVisitLayout.setVisible(true);
             userVisitId = selectedVisit.getId();
             userVisitLayout.add("Date and time: " + selectedVisit.getDateTime());
