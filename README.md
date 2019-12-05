@@ -2,7 +2,7 @@
 1. #### **General description**
 	This is a java frontend project for an application to schedule visits to dieticians, created using Vaadin library
 2. #### **Link to last commit**
-	https://github.com/mwiski/dietician-office-frontend/commit/f88581b43188e4832f62dfab90bb74d3deb474b6
+	https://github.com/mwiski/dietician-office-frontend/commit/91cdb9f10682ff61445590b1bd8f32cbe31c6244
 3. #### **Requirements before running**
     - The application has been created using Java 8, Gradle, MySql and H2 databases, Spring and Hibernate frameworks, runs on the embedded Tomcat server. The detailed information is included in build.gradle.
     - Before running the application make sure you have the appropriate software installed. Credentials for the databases are listed in application.properties file.
